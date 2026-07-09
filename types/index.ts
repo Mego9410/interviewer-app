@@ -76,6 +76,48 @@ export interface DossierDetail {
   angles: Angle[];
 }
 
+export interface Session {
+  id: string;
+  user_id: string;
+  guest_id: string;
+  status: SessionStatus;
+  started_at: string;
+  ended_at: string | null;
+  show_notes: string | null;
+}
+
+export interface TranscriptSegment {
+  id: string;
+  user_id: string;
+  session_id: string;
+  speaker: Speaker | null;
+  text: string;
+  ts_start: number | null;
+  ts_end: number | null;
+  created_at: string;
+}
+
+export interface CreateSessionRequest {
+  guestId: string;
+}
+
+export interface CreateSessionResponse {
+  sessionId: string;
+}
+
+export interface TranscriptionTokenResponse {
+  accessToken: string;
+  expiresIn: number;
+}
+
+/** A finalized transcript segment sent from the client to be persisted. */
+export interface CreateSegmentRequest {
+  speaker: Speaker | null;
+  text: string;
+  tsStart: number | null;
+  tsEnd: number | null;
+}
+
 // --- API envelopes ---
 export interface ApiError {
   error: string;

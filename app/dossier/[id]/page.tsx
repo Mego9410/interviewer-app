@@ -2,7 +2,15 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Loader2, AlertTriangle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  ArrowLeft,
+  ExternalLink,
+  Loader2,
+  AlertTriangle,
+  Radio,
+} from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,8 +28,31 @@ export default function DossierPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
   const [detail, setDetail] = useState<DossierDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
+
+  async function startSession(guestId: string) {
+    setStarting(true);
+    try {
+      const res = await fetch("/api/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guestId }),
+      });
+      const data = await res.json();
+      if (!res.ok || isApiError(data)) {
+        toast.error(isApiError(data) ? data.error : "Could not start session.");
+        setStarting(false);
+        return;
+      }
+      router.push(`/session/${data.sessionId}`);
+    } catch {
+      toast.error("Network error — please try again.");
+      setStarting(false);
+    }
+  }
 
   useEffect(() => {
     let active = true;
@@ -84,16 +115,25 @@ export default function DossierPage({
 
       {detail && (
         <>
-          <header className="mb-8">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {detail.guest.name}
-            </h1>
-            {detail.dossier.status === "pending" && (
-              <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="size-4 animate-spin" />
-                Researching sources and drafting angles…
-              </p>
-            )}
+          <header className="mb-8 flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight">
+                {detail.guest.name}
+              </h1>
+              {detail.dossier.status === "pending" && (
+                <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="size-4 animate-spin" />
+                  Researching sources and drafting angles…
+                </p>
+              )}
+            </div>
+            <Button
+              onClick={() => startSession(detail.guest.id)}
+              disabled={starting}
+            >
+              {starting ? <Loader2 className="animate-spin" /> : <Radio />}
+              Start live session
+            </Button>
           </header>
 
           {detail.dossier.status === "failed" && (

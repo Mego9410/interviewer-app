@@ -19,7 +19,12 @@ one milestone at a time; a milestone's acceptance criteria gate the next one.**
       tables + RLS; `POST /api/dossier` research pipeline (Tavily search + fetch →
       Claude Sonnet 5 → grounded summary + 10 cited angles); add-guest form →
       progress → dossier view with per-angle source links.
-- [ ] M2 — Sessions + live transcript
+- [x] **M2 — Sessions + live transcript.** `sessions`/`transcript_segments`
+      tables + RLS; `POST /api/session`; `POST /api/transcription-token`
+      (short-lived Deepgram token, minted server-side — audio never routes
+      through our server); browser captures meeting-tab (or mic) audio, streams
+      to Deepgram (`nova-3`, diarized), renders live host/guest segments and
+      persists finalized ones.
 - [ ] M3 — Follow-up engine
 - [ ] M4 — Recap
 - [ ] M5 — Billing + funnel
@@ -28,7 +33,7 @@ one milestone at a time; a milestone's acceptance criteria gate the next one.**
 
 Next.js 15 · TypeScript (strict) · Tailwind + shadcn/ui · Supabase
 (Postgres + Auth + RLS) · Claude (Sonnet 5) · Tavily (research) ·
-deployed on Vercel.
+Deepgram (streaming transcription) · deployed on Vercel.
 
 ## Local setup
 
@@ -56,6 +61,7 @@ deployed on Vercel.
    SUPABASE_SERVICE_ROLE_KEY=...   # server-side only, never commit
    ANTHROPIC_API_KEY=...           # M1 — dossier generation (Claude Sonnet 5)
    TAVILY_API_KEY=...              # M1 — web research (search + extract)
+   DEEPGRAM_API_KEY=...            # M2 — streaming transcription
    ```
 
    `.env.local` is gitignored. Never commit secrets (Engineering Rule #5).
@@ -84,11 +90,16 @@ app/
   dashboard/            Protected home — lists guests + dossiers
   dossier/new/          Add-guest form
   dossier/[id]/         Dossier view (summary + cited angles + sources)
+  session/[id]/         Live session — capture + transcript
   api/dossier/          POST (research pipeline) · GET :id (owner-only read)
+  api/session/          POST (create) · [id]/segment POST (persist transcript)
+  api/transcription-token/  POST — mint a short-lived Deepgram token
 components/ui/          shadcn/ui primitives
+components/session/     Live capture + transcript (client)
 lib/supabase/           client (browser) · server · middleware · admin (service role)
 lib/research/           Tavily provider (search + extract)
 lib/ai/                 Anthropic client · model routing · dossier generation
+lib/deepgram.ts         Server-side transcription-token grant
 middleware.ts           Session refresh + route guard
 supabase/migrations/    SQL migrations (RLS ships with each table)
 types/                  Shared DB row + API types
