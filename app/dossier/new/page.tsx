@@ -12,7 +12,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,12 +62,15 @@ export default function NewDossierPage() {
         </Link>
       </Button>
 
+      <p className="eyebrow mb-2">New dossier</p>
+      <h1 className="mb-6 font-display text-3xl font-semibold tracking-tight">
+        Who&apos;s your next guest?
+      </h1>
       <Card>
         <CardHeader>
-          <CardTitle>New dossier</CardTitle>
           <CardDescription>
-            Add your guest. We research public sources and draft grounded,
-            rarely-asked angles — each tied to a citation.
+            A name and a few links is enough. We research public sources and
+            draft ten rarely-asked angles — each tied to a citation.
           </CardDescription>
         </CardHeader>
         <CardContent>

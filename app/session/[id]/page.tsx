@@ -71,10 +71,10 @@ export default async function SessionPage({
       </Button>
 
       <header className="mb-6">
-        <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+        <p className="eyebrow mb-2">
           {ended ? "Session recap" : "Live session"}
         </p>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="font-display text-3xl font-semibold tracking-tight">
           {guest?.name ?? "Guest"}
         </h1>
       </header>

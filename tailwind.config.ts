@@ -14,7 +14,18 @@ const config: Config = {
       screens: { "2xl": "1400px" },
     },
     extend: {
+      fontFamily: {
+        sans: ['"Instrument Sans Variable"', "system-ui", "sans-serif"],
+        display: ['"Bricolage Grotesque Variable"', "system-ui", "sans-serif"],
+        mono: ['"Spline Sans Mono Variable"', "ui-monospace", "monospace"],
+      },
       colors: {
+        signal: {
+          DEFAULT: "hsl(var(--signal))",
+          soft: "hsl(var(--signal-soft))",
+        },
+        live: "hsl(var(--live))",
+        ok: "hsl(var(--ok))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

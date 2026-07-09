@@ -337,13 +337,20 @@ export function LiveTranscript({ sessionId }: { sessionId: string }) {
 
         {(isLive || isConnecting) && (
           <>
-            <span className="inline-flex items-center gap-2 text-sm font-medium">
+            <span className="inline-flex items-center gap-2">
               {isConnecting ? (
-                <Loader2 className="size-4 animate-spin" />
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  <span className="text-sm font-medium">Connecting…</span>
+                </>
               ) : (
-                <span className="size-2 animate-pulse rounded-full bg-red-500" />
+                <>
+                  <span className="size-2 animate-pulse rounded-full bg-live" />
+                  <span className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-live">
+                    Live
+                  </span>
+                </>
               )}
-              {isConnecting ? "Connecting…" : "Live"}
             </span>
             <Button variant="outline" onClick={stop} disabled={isConnecting}>
               <Square className="size-4" />
@@ -380,20 +387,20 @@ export function LiveTranscript({ sessionId }: { sessionId: string }) {
 
       <div className="grid gap-4 md:grid-cols-[1fr_20rem]">
         {/* Transcript */}
-        <div className="min-h-[240px] rounded-lg border bg-muted/30 p-4">
+        <div className="min-h-[240px] rounded-xl border bg-card p-4">
           {lines.length === 0 && !interim ? (
             <p className="text-sm text-muted-foreground">
               The live transcript will appear here.
             </p>
           ) : (
-            <div className="space-y-2 text-sm leading-relaxed">
+            <div className="space-y-2.5 font-mono text-[13px] leading-relaxed">
               {lines.map((line) => (
                 <p key={line.id}>
                   <span
                     className={cn(
-                      "mr-2 text-xs font-semibold uppercase tracking-wide",
+                      "mr-2 text-[10px] font-medium uppercase tracking-[0.15em]",
                       line.speaker === "guest"
-                        ? "text-primary"
+                        ? "text-signal"
                         : "text-muted-foreground"
                     )}
                   >
@@ -408,11 +415,12 @@ export function LiveTranscript({ sessionId }: { sessionId: string }) {
         </div>
 
         {/* Follow-up suggestions (host-only side panel) */}
-        <aside className="space-y-2">
-          <h2 className="text-sm font-semibold tracking-tight">Follow-ups</h2>
+        <aside className="space-y-3">
+          <h2 className="eyebrow">Follow-ups</h2>
           {suggestions.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              Grounded follow-ups appear here as the guest speaks.
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Grounded follow-ups appear here as the guest speaks — each one
+              cited.
             </p>
           ) : (
             <ul className="space-y-2">
@@ -420,13 +428,16 @@ export function LiveTranscript({ sessionId }: { sessionId: string }) {
                 <li
                   key={s.id}
                   className={cn(
-                    "rounded-lg border p-3 text-sm",
+                    "rounded-xl border bg-card p-3.5 text-sm",
+                    s.status === "suggested" && "border-signal/30 bg-signal-soft",
                     s.status === "asked" && "opacity-60"
                   )}
                 >
-                  <p className="font-medium">{s.question}</p>
+                  <p className="font-display font-semibold leading-snug">
+                    {s.question}
+                  </p>
                   {s.rationale && (
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
                       {s.rationale}
                     </p>
                   )}
@@ -435,18 +446,18 @@ export function LiveTranscript({ sessionId }: { sessionId: string }) {
                       href={s.source.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                      className="mt-1.5 inline-flex items-center gap-1 font-mono text-[11px] text-signal hover:underline"
                     >
                       <ExternalLink className="size-3" />
                       {s.source.title ?? s.source.url}
                     </a>
                   ) : (
-                    <span className="mt-1 block text-xs text-muted-foreground">
-                      Based on what the guest just said
+                    <span className="mt-1.5 block font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                      From what they just said
                     </span>
                   )}
                   {s.status === "asked" ? (
-                    <p className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                    <p className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-ok">
                       <Check className="size-3" />
                       Asked
                     </p>

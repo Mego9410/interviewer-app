@@ -66,7 +66,7 @@ export function SessionRecap({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Show notes</CardTitle>
+          <CardTitle className="font-display">Show notes</CardTitle>
           <CardDescription>
             A grounded draft from the transcript and the follow-ups you asked.
             Edit freely.
@@ -89,7 +89,7 @@ export function SessionRecap({
 
       <Card>
         <CardHeader>
-          <CardTitle>Suggestion log</CardTitle>
+          <CardTitle className="font-display">Suggestion log</CardTitle>
           <CardDescription>
             {asked.length} asked · {dismissed.length} dismissed
           </CardDescription>
@@ -104,7 +104,7 @@ export function SessionRecap({
               {suggestions.map((s) => (
                 <li key={s.id} className="flex items-start gap-2">
                   {s.status === "asked" ? (
-                    <Check className="mt-0.5 size-4 shrink-0 text-green-600" />
+                    <Check className="mt-0.5 size-4 shrink-0 text-ok" />
                   ) : s.status === "dismissed" ? (
                     <X className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                   ) : (
@@ -126,7 +126,7 @@ export function SessionRecap({
 
       <Card>
         <CardHeader>
-          <CardTitle>Transcript</CardTitle>
+          <CardTitle className="font-display">Transcript</CardTitle>
         </CardHeader>
         <CardContent>
           {segments.length === 0 ? (
@@ -134,14 +134,14 @@ export function SessionRecap({
               No transcript was captured.
             </p>
           ) : (
-            <div className="space-y-2 text-sm leading-relaxed">
+            <div className="space-y-2.5 font-mono text-[13px] leading-relaxed">
               {segments.map((seg) => (
                 <p key={seg.id}>
                   <span
                     className={cn(
-                      "mr-2 text-xs font-semibold uppercase tracking-wide",
+                      "mr-2 text-[10px] font-medium uppercase tracking-[0.15em]",
                       seg.speaker === "guest"
-                        ? "text-primary"
+                        ? "text-signal"
                         : "text-muted-foreground"
                     )}
                   >

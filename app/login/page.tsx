@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Wordmark } from "@/components/wordmark";
 import { createClient } from "@/lib/supabase/client";
 
 type Step = "email" | "code";
@@ -65,13 +68,18 @@ export default function LoginPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
+      <Link href="/" className="mb-8 self-center">
+        <Wordmark />
+      </Link>
       <Card>
         <CardHeader>
-          <CardTitle>Sign in</CardTitle>
+          <CardTitle className="font-display text-xl">
+            {step === "email" ? "Sign in" : "Check your email"}
+          </CardTitle>
           <CardDescription>
             {step === "email"
-              ? "Enter your email and we'll send you a one-time code."
-              : `We sent a code to ${email}. Enter it below.`}
+              ? "Enter your email and we'll send you a one-time code. No password to remember."
+              : `We sent a six-digit code to ${email}.`}
           </CardDescription>
         </CardHeader>
         <CardContent>

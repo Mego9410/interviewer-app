@@ -117,7 +117,7 @@ export default function DossierPage({
         <>
           <header className="mb-8 flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">
+              <h1 className="font-display text-3xl font-semibold tracking-tight">
                 {detail.guest.name}
               </h1>
               {detail.dossier.status === "pending" && (
@@ -154,7 +154,7 @@ export default function DossierPage({
           {detail.dossier.summary && (
             <Card className="mb-6">
               <CardHeader>
-                <CardTitle>Briefing</CardTitle>
+                <CardTitle className="font-display">Briefing</CardTitle>
                 <CardDescription>
                   {detail.dossier.model_used
                     ? `Grounded in ${detail.sources.length} source${
@@ -171,7 +171,7 @@ export default function DossierPage({
 
           {detail.angles.length > 0 && (
             <section className="mb-6">
-              <h2 className="mb-3 text-lg font-semibold tracking-tight">
+              <h2 className="eyebrow mb-4">
                 Angles
               </h2>
               <ol className="space-y-3">
@@ -183,7 +183,7 @@ export default function DossierPage({
                     <li key={angle.id}>
                       <Card>
                         <CardContent className="space-y-2 py-4">
-                          <p className="font-medium">{angle.question}</p>
+                          <p className="font-display font-semibold leading-snug">{angle.question}</p>
                           {angle.rationale && (
                             <p className="text-sm text-muted-foreground">
                               {angle.rationale}
@@ -194,7 +194,7 @@ export default function DossierPage({
                               href={source.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                              className="inline-flex items-center gap-1 font-mono text-[11px] text-signal hover:underline"
                             >
                               <ExternalLink className="size-3" />
                               {source.title ?? source.url}
@@ -215,7 +215,7 @@ export default function DossierPage({
 
           {detail.sources.length > 0 && (
             <section>
-              <h2 className="mb-3 text-lg font-semibold tracking-tight">
+              <h2 className="eyebrow mb-4">
                 Sources
               </h2>
               <ul className="space-y-2">
@@ -225,7 +225,7 @@ export default function DossierPage({
                       href={s.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                      className="inline-flex items-center gap-1.5 font-mono text-xs text-signal hover:underline"
                     >
                       <ExternalLink className="size-3 shrink-0" />
                       {s.title ?? s.url}

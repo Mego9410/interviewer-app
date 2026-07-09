@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/bricolage-grotesque";
+import "@fontsource-variable/instrument-sans";
+import "@fontsource-variable/spline-sans-mono";
 import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "The Second Question",
+  title: "The Second Question — live interview copilot",
   description:
-    "A live copilot that researches your guest and surfaces grounded, dig-deeper follow-ups during the interview.",
+    "Research your guest into a grounded dossier, then get cited, dig-deeper follow-ups on your screen while you record. Everyone asks the first question. You'll ask the second.",
 };
 
 export default function RootLayout({

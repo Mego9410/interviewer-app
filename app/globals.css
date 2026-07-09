@@ -2,54 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+/* ------------------------------------------------------------------
+   The Second Question — "Studio, warm signal"
+   Warm paper / espresso ink grounds. One accent: signal amber, used
+   for citations & sources (the product's promise is grounding).
+   REC red is reserved for LIVE. Meter green marks asked/success.
+------------------------------------------------------------------- */
+
+:root {
+    --background: 40 38% 97%;          /* warm paper #FAF8F4 */
+    --foreground: 30 24% 10%;          /* espresso #211B14 */
+    --card: 36 40% 99%;
+    --card-foreground: 30 24% 10%;
+    --primary: 30 24% 12%;             /* ink */
+    --primary-foreground: 40 38% 97%;
+    --secondary: 37 30% 92%;
+    --secondary-foreground: 30 24% 14%;
+    --muted: 37 30% 92%;
+    --muted-foreground: 30 10% 38%;
+    --accent: 37 30% 90%;
+    --accent-foreground: 30 24% 12%;
+    --destructive: 4 59% 47%;
+    --destructive-foreground: 40 38% 97%;
+    --border: 37 26% 86%;
+    --input: 37 26% 82%;
+    --ring: 33 72% 39%;
+    --radius: 0.625rem;
+
+    /* product tokens */
+    --signal: 33 72% 39%;              /* citation amber #A96A1C */
+    --signal-soft: 36 55% 93%;         /* amber wash */
+    --live: 4 59% 47%;                 /* REC red #C03B32 */
+    --ok: 150 44% 33%;                 /* meter green #2F7A55 */
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 20 16% 7%;           /* studio #161210 */
+    --foreground: 34 30% 91%;          /* warm cream #EFE9E1 */
+    --card: 24 19% 11%;
+    --card-foreground: 34 30% 91%;
+    --primary: 34 30% 91%;             /* cream buttons, ink text */
+    --primary-foreground: 24 19% 10%;
+    --secondary: 27 18% 15%;
+    --secondary-foreground: 34 30% 91%;
+    --muted: 27 18% 14%;
+    --muted-foreground: 32 14% 60%;
+    --accent: 27 18% 16%;
+    --accent-foreground: 34 30% 91%;
+    --destructive: 4 72% 63%;
+    --destructive-foreground: 20 16% 7%;
+    --border: 28 19% 17%;
+    --input: 28 19% 20%;
+    --ring: 35 80% 57%;
+
+    --signal: 35 80% 57%;              /* amber glow #E9A13B */
+    --signal-soft: 33 40% 14%;
+    --live: 4 72% 63%;
+    --ok: 150 36% 54%;
   }
-}
 
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "ss01";
+  }
+  ::selection {
+    background: hsl(var(--signal) / 0.25);
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+}
+
+@layer utilities {
+  /* Mono eyebrow labels — the "tape log" register */
+  .eyebrow {
+    @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground;
+  }
+
+  /* Ambient waveform bars (landing hero) */
+  .wave-bar {
+    transform-origin: center;
+    animation: wave 1.6s ease-in-out infinite;
+  }
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.28); }
+    50% { transform: scaleY(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wave-bar { animation: none; transform: scaleY(0.55); }
+  }
+
+  /* Soft studio-lamp glow behind hero elements */
+  .signal-glow {
+    background:
+      radial-gradient(60% 55% at 70% 20%, hsl(var(--signal) / 0.09), transparent 70%);
   }
 }
