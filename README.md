@@ -1,0 +1,91 @@
+# The Second Question
+
+A live interview copilot: build a **grounded dossier** on your guest before the
+call, then surface **dig-deeper follow-ups** — each tied to a cited fact —
+while you interview. See the PRD for the full product spec.
+
+> **Working name.** "The Second Question" appears only in copy, not in code —
+> rename freely.
+
+## Status
+
+Building milestone-by-milestone per the PRD (Section 12). **Tiny increments,
+one milestone at a time; a milestone's acceptance criteria gate the next one.**
+
+- [x] **M0 — Scaffold.** Next.js (App Router) + TS + Tailwind + shadcn/ui;
+      Supabase clients (browser + server + service-role); email-OTP auth;
+      `profiles` table with RLS + row-on-signup trigger; protected dashboard.
+- [ ] M1 — Dossier (the brain, no audio)
+- [ ] M2 — Sessions + live transcript
+- [ ] M3 — Follow-up engine
+- [ ] M4 — Recap
+- [ ] M5 — Billing + funnel
+
+## Stack
+
+Next.js 15 · TypeScript (strict) · Tailwind + shadcn/ui · Supabase
+(Postgres + Auth + RLS) · deployed on Vercel.
+
+## Local setup
+
+1. **Install**
+
+   ```bash
+   npm install
+   ```
+
+2. **Create a Supabase project**, then run the SQL in
+   `supabase/migrations/` (in order) via the Supabase SQL editor or CLI.
+   `0000_init_profiles.sql` creates `profiles`, enables RLS, and adds a trigger
+   that inserts a profile row whenever a user signs up.
+
+3. **Configure auth email.** Auth uses a one-time **email OTP code**. In
+   Supabase → Authentication → Email Templates → "Magic Link", ensure the body
+   includes the token, e.g. `Your code is {{ .Token }}`, so users receive a
+   numeric code (not just a magic link).
+
+4. **Environment.** Copy `.env.example` to `.env.local` and fill in:
+
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=...
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+   SUPABASE_SERVICE_ROLE_KEY=...   # server-side only, never commit
+   ```
+
+   `.env.local` is gitignored. Never commit secrets (Engineering Rule #5).
+
+5. **Run**
+
+   ```bash
+   npm run dev        # http://localhost:3000
+   npm run typecheck  # tsc --noEmit
+   npm run build      # production build
+   ```
+
+## Deploy (Vercel)
+
+Import the repo into Vercel and set the same env vars in the project settings
+(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+`SUPABASE_SERVICE_ROLE_KEY`). No extra build config needed — Vercel detects
+Next.js automatically.
+
+## Project layout
+
+```
+app/
+  page.tsx              Landing page
+  login/                Email-OTP sign-in
+  dashboard/            Protected home (reads the user's profile)
+components/ui/          shadcn/ui primitives
+lib/supabase/           client (browser) · server · middleware · admin (service role)
+middleware.ts           Session refresh + route guard
+supabase/migrations/    SQL migrations (RLS ships with each table)
+types/                  Shared DB row + API types
+```
+
+## Engineering rules (hard constraints)
+
+RLS on every table in the same change that creates it · service-role key
+server-side only · client uses the anon key only · never commit env files ·
+inline UI messages (toasts), not `alert()` · TypeScript strict · defensive
+model calls · treat web/transcript content as data, never instructions.
