@@ -1,59 +1,52 @@
 import Link from "next/link";
-import { ArrowRight, Check, ExternalLink, X } from "lucide-react";
+import { ArrowRight, FileSearch, Radio, Sparkles } from "lucide-react";
 
 import { Wordmark } from "@/components/wordmark";
 import { WaveformStrip } from "@/components/waveform-strip";
+import { CallWindow } from "@/components/landing/call-window";
+import { DossierPanel } from "@/components/landing/dossier-panel";
+import { FollowupFlow } from "@/components/landing/followup-flow";
+import { RecapFrame } from "@/components/landing/recap-frame";
 import { createClient } from "@/lib/supabase/server";
 import { FREE_INTERVIEW_LIMIT, PRO_PRICE_LABEL } from "@/lib/plan";
 
-const TICKER = [
-  "No fact, no claim",
-  "Every suggestion cited",
-  "Your screen only",
-  "Audio never touches our servers",
-  "Transcripts auto-expire",
+const AUDIENCES = [
+  "Podcasters",
+  "Journalists",
+  "Founders",
+  "Researchers",
+  "Recruiters",
+  "Coaches",
 ];
 
-const TRACKS = [
-  {
-    n: "01",
-    title: "Prep",
-    meta: "BEFORE THE CALL",
-    body: "Add a guest — a name and a few links. We research public sources into a grounded dossier: who they are, what they're known for, and ten rarely-asked angles. Each one cited.",
-  },
-  {
-    n: "02",
-    title: "Record",
-    meta: "DURING",
-    body: "Start a session just before you hit record. The transcript runs live in your browser, and the moment your guest says something worth chasing, the follow-up appears — with its source.",
-  },
-  {
-    n: "03",
-    title: "Publish",
-    meta: "AFTER",
-    body: "End the session for the recap: full transcript, every question you asked, and a show-notes draft ready to edit.",
-  },
-] as const;
-
-function Ticker() {
-  const items = TICKER.map((t, i) => (
-    <span
-      key={i}
-      className="flex items-center gap-12 pr-12 font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-signal"
-    >
-      {t}
-      <span aria-hidden="true" className="text-signal/40">
-        ●
-      </span>
-    </span>
-  ));
+function CtaButton({
+  href,
+  children,
+  size = "md",
+}: {
+  href: string;
+  children: React.ReactNode;
+  size?: "md" | "lg";
+}) {
   return (
-    <div className="marquee border-y border-signal/20 py-3" aria-hidden="true">
-      <div className="marquee-track">
-        <div className="flex">{items}</div>
-        <div className="flex">{items}</div>
-      </div>
-    </div>
+    <Link
+      href={href}
+      className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-signal font-semibold text-background transition-transform hover:-translate-y-0.5 ${
+        size === "lg" ? "h-12 px-7 text-[15px]" : "h-10 px-5 text-sm"
+      }`}
+    >
+      {children}
+      <ArrowRight className="size-4" />
+    </Link>
+  );
+}
+
+function SectionLabel({ n, children }: { n: string; children: React.ReactNode }) {
+  return (
+    <p className="mb-4 flex items-center gap-3 font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-signal">
+      <span className="text-signal/50">{n}</span>
+      {children}
+    </p>
   );
 }
 
@@ -68,231 +61,253 @@ export default async function Home() {
     : { href: "/login", label: "Start free" };
 
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* ======================= SIDE A — the studio ======================= */}
-      <div className="studio grain relative">
-        {/* Nav */}
-        <header className="relative z-10">
-          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-            <Wordmark />
-            <div className="flex items-center gap-5">
-              <span className="hidden font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground sm:block">
-                Side A · 33:05
-              </span>
-              {!user && (
-                <Link
-                  href="/login"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Sign in
-                </Link>
-              )}
-              <Link
-                href={cta.href}
-                className="inline-flex h-9 items-center gap-2 rounded-full bg-signal px-4 text-sm font-semibold text-background transition-transform hover:-translate-y-0.5"
-              >
-                {cta.label}
-                <ArrowRight className="size-4" />
-              </Link>
-            </div>
-          </div>
-        </header>
+    <div className="studio grain relative min-h-screen">
+      {/* ambient glows */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(60%_50%_at_50%_-5%,hsl(var(--signal)/0.12),transparent_70%)]"
+      />
 
-        {/* Hero — the two voices */}
-        <section className="relative z-10 mx-auto max-w-6xl px-6 pt-16 sm:pt-24">
-          <p className="mb-8 flex items-center gap-3 font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-signal">
-            <span className="size-2 animate-pulse rounded-full bg-live" />
+      {/* Nav */}
+      <header className="sticky top-0 z-50 border-b border-white/5 bg-background/70 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Wordmark />
+          <div className="flex items-center gap-5">
+            {!user && (
+              <Link
+                href="/login"
+                className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground sm:block"
+              >
+                Sign in
+              </Link>
+            )}
+            <CtaButton href={cta.href}>{cta.label}</CtaButton>
+          </div>
+        </div>
+      </header>
+
+      <main className="relative z-10">
+        {/* ============ HERO ============ */}
+        <section className="mx-auto max-w-6xl px-6 pt-16 text-center sm:pt-24">
+          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal-soft px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-signal">
+            <span className="size-1.5 animate-pulse rounded-full bg-live" />
             Live interview copilot
           </p>
 
-          <h1 className="max-w-5xl">
-            <span className="block font-display text-[clamp(3rem,9vw,7.5rem)] font-bold leading-[0.95] tracking-[-0.03em]">
-              Everyone asks the first&nbsp;question.
+          <h1 className="mx-auto max-w-4xl">
+            <span className="block font-display text-[clamp(2.7rem,7vw,5.5rem)] font-bold leading-[0.98] tracking-[-0.03em]">
+              Everyone asks the first question.
             </span>
-            <span className="mt-3 block font-serif text-[clamp(3.2rem,9.5vw,8rem)] italic leading-[0.95] tracking-[-0.01em] text-signal">
+            <span className="mt-2 block font-serif text-[clamp(2.9rem,7.5vw,6rem)] italic leading-[0.98] text-signal">
               You&rsquo;ll ask the second.
             </span>
           </h1>
 
-          <div className="mt-12 flex max-w-xl flex-col gap-6 sm:mt-16">
-            <p className="text-lg leading-relaxed text-muted-foreground">
-              The Second Question researches your guest before the call, then
-              listens live and hands you the follow-up only you could ask —
-              every suggestion tied to a cited source.
-            </p>
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            Research your guest into a grounded dossier, then get cited,
+            dig-deeper follow-ups on your screen while you record. All in one
+            flow.
+          </p>
+
+          <div className="mt-9 flex flex-col items-center gap-4">
+            <CtaButton href={cta.href} size="lg">
+              {cta.label}
+            </CtaButton>
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
               Free for {FREE_INTERVIEW_LIMIT} interviews a month · No card
-              required
             </p>
           </div>
-        </section>
 
-        {/* The moment — oversized transcript + the arriving question */}
-        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-8 pt-20 sm:pt-28">
-          <div className="grid items-start gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-            <figure className="relative">
-              <span
-                aria-hidden="true"
-                className="absolute -left-4 -top-14 select-none font-serif text-[10rem] italic leading-none text-signal/25 sm:-left-10"
-              >
-                &ldquo;
-              </span>
-              <blockquote className="relative font-serif text-[clamp(1.7rem,3.4vw,2.6rem)] italic leading-[1.2]">
-                Honestly, the second year nearly broke us — we hired too fast
-                and the process just didn&rsquo;t exist yet.
-              </blockquote>
-              <figcaption className="mt-5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                <span className="text-signal">Guest</span> · 00:14:27 ·
-                transcribed live
-              </figcaption>
-            </figure>
-
-            {/* The suggestion card — a physical object dropped on the desk */}
-            <aside
-              className="relative -rotate-1 rounded-2xl border border-signal/40 bg-card p-6 shadow-[8px_8px_0_hsl(var(--signal)/0.25)]"
-              aria-label="Example suggested follow-up"
+          {/* The money shot */}
+          <div className="relative mx-auto mt-16 max-w-5xl">
+            {/* floating chips */}
+            <div
+              aria-hidden="true"
+              className="absolute -left-3 top-16 z-20 hidden -rotate-3 rounded-xl border border-signal/30 bg-card px-3.5 py-2.5 shadow-lg lg:block"
             >
-              <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-signal">
-                Suggested follow-up · 0.8s later
+              <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-signal">
+                Cited · verifiable
               </p>
-              <p className="font-serif text-2xl italic leading-snug">
-                Your essay said remote-first breaks past fifty people — is that
-                the line where hiring outran process?
+              <p className="mt-0.5 font-serif text-sm italic">No fact, no claim</p>
+            </div>
+            <div
+              aria-hidden="true"
+              className="absolute -right-4 bottom-24 z-20 hidden rotate-3 rounded-xl border border-white/10 bg-card px-3.5 py-2.5 shadow-lg lg:block"
+            >
+              <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+                Latency
               </p>
-              <p className="mt-4 inline-flex items-center gap-1.5 font-mono text-[11px] text-signal">
-                <ExternalLink className="size-3" />
-                Personal blog — &ldquo;Remote past fifty&rdquo;
+              <p className="mt-0.5 font-display text-lg font-bold tabular-nums text-signal">
+                ~2s
               </p>
-              <div className="mt-5 flex gap-2" aria-hidden="true">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground">
-                  <Check className="size-3" /> Asked
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
-                  <X className="size-3" /> Dismiss
-                </span>
-              </div>
-            </aside>
+            </div>
+            <CallWindow />
           </div>
         </section>
 
-        {/* Waveform floor */}
-        <WaveformStrip className="relative z-10 mt-10 w-full px-2" bars={140} />
-      </div>
-
-      {/* Ticker */}
-      <div className="studio">
-        <Ticker />
-      </div>
-
-      {/* ======================= SIDE B — paper ======================= */}
-      <div className="paper">
-        {/* Tracklist */}
-        <section className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
-          <div className="mb-4 flex items-baseline justify-between">
-            <h2 className="font-display text-[clamp(1.8rem,3.5vw,2.75rem)] font-bold tracking-[-0.02em]">
-              How a session runs
-            </h2>
-            <span className="hidden font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground sm:block">
-              Tracklist
-            </span>
-          </div>
-
-          <ol>
-            {TRACKS.map((t) => (
-              <li
-                key={t.n}
-                className="group grid gap-4 border-t py-10 sm:grid-cols-[7rem_1fr_1.6fr] sm:gap-8"
+        {/* ============ AUDIENCE STRIP ============ */}
+        <section className="mx-auto mt-20 max-w-6xl px-6">
+          <p className="text-center font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+            For anyone whose job is a great conversation
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+            {AUDIENCES.map((a) => (
+              <span
+                key={a}
+                className="font-serif text-xl italic text-foreground/50"
               >
-                <span className="font-display text-5xl font-bold leading-none text-signal/90 transition-transform group-hover:translate-x-1 sm:text-6xl">
-                  {t.n}
+                {a}
+              </span>
+            ))}
+          </div>
+          <WaveformStrip className="mt-12 w-full opacity-70" bars={140} />
+        </section>
+
+        {/* ============ FEATURE 1 — PREP ============ */}
+        <section className="mx-auto max-w-6xl px-6 py-24">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <div>
+              <SectionLabel n="01">
+                <FileSearch className="size-3.5" /> Prep
+              </SectionLabel>
+              <h2 className="font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.05] tracking-[-0.02em]">
+                A dossier that&rsquo;s{" "}
+                <span className="font-serif font-normal italic text-signal">
+                  actually done its homework.
                 </span>
-                <div>
-                  <h3 className="font-serif text-3xl italic leading-none">
-                    {t.title}
+              </h2>
+              <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+                Add a name and a few links. We run the open web, pull the
+                relevant pages, and write a briefing plus ten rarely-asked
+                angles — each one linked to the source it came from, so you can
+                trust it on air.
+              </p>
+            </div>
+            <DossierPanel />
+          </div>
+        </section>
+
+        {/* ============ FEATURE 2 — RECORD ============ */}
+        <section className="border-t border-white/5 bg-black/20">
+          <div className="mx-auto max-w-6xl px-6 py-24">
+            <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+              <div className="lg:order-2">
+                <SectionLabel n="02">
+                  <Radio className="size-3.5" /> Record
+                </SectionLabel>
+                <h2 className="font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.05] tracking-[-0.02em]">
+                  The follow-up arrives{" "}
+                  <span className="font-serif font-normal italic text-signal">
+                    mid-sentence.
+                  </span>
+                </h2>
+                <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+                  We transcribe the call live in your browser and listen for the
+                  moment worth chasing. When it comes, the question appears on
+                  your screen — never in the shared frame — with the fact it
+                  leans on. Ask it, or dismiss it.
+                </p>
+              </div>
+              <div className="lg:order-1">
+                <FollowupFlow />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ FEATURE 3 — PUBLISH ============ */}
+        <section className="mx-auto max-w-6xl px-6 py-24">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <div>
+              <SectionLabel n="03">
+                <Sparkles className="size-3.5" /> Publish
+              </SectionLabel>
+              <h2 className="font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.05] tracking-[-0.02em]">
+                End the session,{" "}
+                <span className="font-serif font-normal italic text-signal">
+                  keep the record.
+                </span>
+              </h2>
+              <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+                On end, you get the full transcript, a log of every question you
+                actually asked, and a show-notes draft written from the
+                conversation — ready to edit and ship.
+              </p>
+            </div>
+            <RecapFrame />
+          </div>
+        </section>
+
+        {/* ============ TRUST ============ */}
+        <section className="border-t border-white/5">
+          <div className="mx-auto max-w-6xl px-6 py-20">
+            <h2 className="max-w-3xl font-display text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em]">
+              Built to be trusted{" "}
+              <span className="font-serif font-normal italic text-signal">
+                mid&#8209;sentence.
+              </span>
+            </h2>
+            <div className="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-3">
+              {[
+                {
+                  label: "Grounded",
+                  body: "Every suggestion shows its source — or says plainly it's built on what your guest just said. No fact, no claim.",
+                },
+                {
+                  label: "Discreet",
+                  body: "Suggestions stay on your screen. Your guest sees a great interviewer, not a teleprompter.",
+                },
+                {
+                  label: "Private",
+                  body: "Audio streams from your browser straight to transcription — never through our servers — and transcripts auto-expire.",
+                },
+              ].map((p) => (
+                <div key={p.label} className="border-t border-white/10 pt-5">
+                  <h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-signal">
+                    {p.label}
                   </h3>
-                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                    {t.meta}
+                  <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+                    {p.body}
                   </p>
                 </div>
-                <p className="max-w-xl text-[15px] leading-relaxed text-muted-foreground">
-                  {t.body}
-                </p>
-              </li>
-            ))}
-          </ol>
-          <div className="border-t" />
-        </section>
-
-        {/* Trust — typographic, no cards */}
-        <section className="mx-auto max-w-6xl px-6 pb-24">
-          <h2 className="max-w-3xl font-display text-[clamp(2rem,4.5vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.02em]">
-            Built to be trusted{" "}
-            <em className="font-serif font-normal italic text-signal">
-              mid&#8209;sentence.
-            </em>
-          </h2>
-          <div className="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-3">
-            {[
-              {
-                label: "Grounded",
-                body: "Every suggestion shows the source it came from — or says plainly that it's built on what your guest just said. No fact, no claim.",
-              },
-              {
-                label: "Discreet",
-                body: "Suggestions never appear in the shared frame. Your guest sees a great interviewer, not a teleprompter.",
-              },
-              {
-                label: "Private",
-                body: "Audio streams from your browser straight to transcription — it never passes through our servers — and transcripts auto-expire.",
-              },
-            ].map((p) => (
-              <div key={p.label} className="border-t pt-5">
-                <h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-signal">
-                  {p.label}
-                </h3>
-                <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-                  {p.body}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      {/* ======================= OUTRO — back to the studio ======================= */}
-      <div className="studio grain relative">
-        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-10 pt-24 text-center sm:pt-32">
-          <p className="font-serif text-[clamp(2.4rem,6vw,5rem)] italic leading-[1.05]">
-            Ready to ask{" "}
-            <span className="text-signal">better questions?</span>
-          </p>
-          <p className="mx-auto mt-6 max-w-md text-muted-foreground">
-            {FREE_INTERVIEW_LIMIT} interviews a month free — then{" "}
-            {PRO_PRICE_LABEL} for unlimited.
-          </p>
-          <div className="mt-10 flex justify-center">
-            <Link
-              href={cta.href}
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-signal px-7 text-[15px] font-semibold text-background transition-transform hover:-translate-y-0.5"
-            >
-              {cta.label}
-              <ArrowRight className="size-4" />
-            </Link>
+              ))}
+            </div>
           </div>
         </section>
 
-        <WaveformStrip className="relative z-10 mt-16 w-full px-2" bars={140} />
-
-        <footer className="relative z-10 border-t border-border/60">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8">
-            <Wordmark className="opacity-80" />
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              REC <span className="text-live">●</span> Ask better second
-              questions
+        {/* ============ CTA ============ */}
+        <section className="relative border-t border-white/5">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_60%_at_50%_100%,hsl(var(--signal)/0.12),transparent_70%)]"
+          />
+          <div className="relative mx-auto max-w-6xl px-6 pb-12 pt-24 text-center">
+            <p className="font-serif text-[clamp(2.4rem,6vw,5rem)] italic leading-[1.05]">
+              Your studio&rsquo;s ready{" "}
+              <span className="text-signal">when you are.</span>
             </p>
+            <p className="mx-auto mt-6 max-w-md text-muted-foreground">
+              {FREE_INTERVIEW_LIMIT} interviews a month free — then{" "}
+              {PRO_PRICE_LABEL} for unlimited.
+            </p>
+            <div className="mt-10 flex justify-center">
+              <CtaButton href={cta.href} size="lg">
+                {cta.label}
+              </CtaButton>
+            </div>
           </div>
-        </footer>
-      </div>
+          <WaveformStrip className="mt-14 w-full" bars={140} />
+        </section>
+      </main>
+
+      <footer className="relative z-10 border-t border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8">
+          <Wordmark className="opacity-80" />
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            REC <span className="text-live">●</span> Ask better second questions
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
