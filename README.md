@@ -36,13 +36,21 @@ one milestone at a time; a milestone's acceptance criteria gate the next one.**
       `PATCH /api/session/:id` saves host edits. Session page flips to a recap
       view — editable show-notes, the asked/dismissed suggestion log, and the
       full transcript; dashboard lists recent sessions.
-- [ ] M5 — Billing + funnel
+- [x] **M5 — Billing + funnel.** Stripe Checkout (`POST /api/stripe/checkout`) +
+      webhook (`POST /api/stripe/webhook`, raw-body verified, flips
+      `profiles.plan` on subscription events via the service-role client); the
+      free allowance (3 interviews/month) is enforced in `POST /api/session`
+      with an inline upgrade message; landing page has a short explainer + a
+      guided first-dossier CTA (no book-a-demo).
+
+**MVP done** = M0–M5 complete. One real interview run end-to-end (with keys
+wired up) is the final acceptance gate.
 
 ## Stack
 
 Next.js 15 · TypeScript (strict) · Tailwind + shadcn/ui · Supabase
-(Postgres + Auth + RLS) · Claude (Sonnet 5) · Tavily (research) ·
-Deepgram (streaming transcription) · deployed on Vercel.
+(Postgres + Auth + RLS) · Claude (Sonnet 5 / Haiku 4.5) · Tavily (research) ·
+Deepgram (streaming transcription) · Stripe (billing) · deployed on Vercel.
 
 ## Local setup
 
@@ -71,6 +79,9 @@ Deepgram (streaming transcription) · deployed on Vercel.
    ANTHROPIC_API_KEY=...           # M1 — dossier generation (Claude Sonnet 5)
    TAVILY_API_KEY=...              # M1 — web research (search + extract)
    DEEPGRAM_API_KEY=...            # M2 — streaming transcription
+   STRIPE_SECRET_KEY=...           # M5 — billing
+   STRIPE_WEBHOOK_SECRET=...       # M5 — webhook signature verification
+   STRIPE_PRO_PRICE_ID=...         # M5 — recurring Price ID for the Pro plan
    ```
 
    `.env.local` is gitignored. Never commit secrets (Engineering Rule #5).
@@ -106,12 +117,14 @@ app/
   api/transcription-token/  POST — mint a short-lived Deepgram token
   api/suggest/          POST — triage → grounded follow-up generation
   api/suggestion/[id]/  PATCH — mark asked / dismissed
+  api/stripe/           checkout POST · webhook POST (plan sync)
 components/ui/          shadcn/ui primitives
 components/session/     Live capture + transcript + follow-up panel (client)
 lib/supabase/           client (browser) · server · middleware · admin (service role)
 lib/research/           Tavily provider (search + extract)
 lib/ai/                 Anthropic client · model routing · dossier · triage · follow-ups
 lib/deepgram.ts         Server-side transcription-token grant
+lib/stripe.ts           Server-side Stripe client · lib/plan.ts (allowance/price)
 middleware.ts           Session refresh + route guard
 supabase/migrations/    SQL migrations (RLS ships with each table)
 types/                  Shared DB row + API types

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
+import { FREE_INTERVIEW_LIMIT, PRO_PRICE_LABEL } from "@/lib/plan";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -29,10 +30,44 @@ export default async function Home() {
           </Button>
         ) : (
           <Button asChild size="lg">
-            <Link href="/login">Get started</Link>
+            <Link href="/login">Build your first dossier</Link>
           </Button>
         )}
       </div>
+
+      {/* TODO(oliver): replace this explainer with the short explainer video. */}
+      <div className="mt-16 grid w-full max-w-2xl gap-6 text-left sm:grid-cols-3">
+        {[
+          {
+            step: "1",
+            title: "Add your guest",
+            body: "Name plus any links. We research public sources into a grounded dossier.",
+          },
+          {
+            step: "2",
+            title: "Go live",
+            body: "Start a session before recording. We transcribe the call in your browser.",
+          },
+          {
+            step: "3",
+            title: "Ask the second question",
+            body: "Cited follow-ups appear on your screen as the guest speaks.",
+          },
+        ].map((s) => (
+          <div key={s.step}>
+            <div className="mb-2 flex size-7 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+              {s.step}
+            </div>
+            <h3 className="text-sm font-semibold">{s.title}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{s.body}</p>
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-12 text-xs text-muted-foreground">
+        Free to start · {" "}
+        {FREE_INTERVIEW_LIMIT} interviews a month, then {PRO_PRICE_LABEL}.
+      </p>
     </main>
   );
 }

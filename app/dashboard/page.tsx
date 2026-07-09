@@ -11,6 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
+import { FREE_INTERVIEW_LIMIT, PRO_PRICE_LABEL } from "@/lib/plan";
+import { UpgradeButton } from "@/components/upgrade-button";
 import type { DossierStatus, Profile } from "@/types";
 
 import { SignOutButton } from "./sign-out-button";
@@ -80,6 +82,25 @@ export default async function DashboardPage() {
           <SignOutButton />
         </div>
       </header>
+
+      {(profile?.plan ?? "free") === "free" && (
+        <Card className="mb-8">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
+            <p className="text-sm">
+              <span className="font-medium">
+                {profile?.interviews_used_this_period ?? 0} of{" "}
+                {FREE_INTERVIEW_LIMIT}
+              </span>{" "}
+              <span className="text-muted-foreground">
+                free interviews used this month
+              </span>
+            </p>
+            <UpgradeButton size="sm">
+              Upgrade to Pro · {PRO_PRICE_LABEL}
+            </UpgradeButton>
+          </CardContent>
+        </Card>
+      )}
 
       {!guests || guests.length === 0 ? (
         <Card>
