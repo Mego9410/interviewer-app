@@ -20,6 +20,62 @@ export interface Profile {
   created_at: string;
 }
 
+export interface Guest {
+  id: string;
+  user_id: string;
+  name: string;
+  links: string[];
+  created_at: string;
+}
+
+export interface Dossier {
+  id: string;
+  user_id: string;
+  guest_id: string;
+  status: DossierStatus;
+  summary: string | null;
+  error: string | null;
+  model_used: string | null;
+  created_at: string;
+}
+
+export interface Source {
+  id: string;
+  user_id: string;
+  dossier_id: string;
+  url: string;
+  title: string | null;
+  snippet: string;
+  retrieved_at: string;
+}
+
+export interface Angle {
+  id: string;
+  user_id: string;
+  dossier_id: string;
+  source_id: string | null;
+  question: string;
+  rationale: string | null;
+  category: string | null;
+}
+
+// --- API request/response shapes ---
+export interface CreateDossierRequest {
+  name: string;
+  links: string[];
+}
+
+export interface CreateDossierResponse {
+  dossierId: string;
+}
+
+export interface DossierDetail {
+  dossier: Dossier;
+  guest: Guest;
+  sources: Source[];
+  angles: Angle[];
+}
+
 // --- API envelopes ---
 export interface ApiError {
   error: string;

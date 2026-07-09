@@ -15,7 +15,10 @@ one milestone at a time; a milestone's acceptance criteria gate the next one.**
 - [x] **M0 — Scaffold.** Next.js (App Router) + TS + Tailwind + shadcn/ui;
       Supabase clients (browser + server + service-role); email-OTP auth;
       `profiles` table with RLS + row-on-signup trigger; protected dashboard.
-- [ ] M1 — Dossier (the brain, no audio)
+- [x] **M1 — Dossier (the brain, no audio).** `guests`/`dossiers`/`sources`/`angles`
+      tables + RLS; `POST /api/dossier` research pipeline (Tavily search + fetch →
+      Claude Sonnet 5 → grounded summary + 10 cited angles); add-guest form →
+      progress → dossier view with per-angle source links.
 - [ ] M2 — Sessions + live transcript
 - [ ] M3 — Follow-up engine
 - [ ] M4 — Recap
@@ -24,7 +27,8 @@ one milestone at a time; a milestone's acceptance criteria gate the next one.**
 ## Stack
 
 Next.js 15 · TypeScript (strict) · Tailwind + shadcn/ui · Supabase
-(Postgres + Auth + RLS) · deployed on Vercel.
+(Postgres + Auth + RLS) · Claude (Sonnet 5) · Tavily (research) ·
+deployed on Vercel.
 
 ## Local setup
 
@@ -50,6 +54,8 @@ Next.js 15 · TypeScript (strict) · Tailwind + shadcn/ui · Supabase
    NEXT_PUBLIC_SUPABASE_URL=...
    NEXT_PUBLIC_SUPABASE_ANON_KEY=...
    SUPABASE_SERVICE_ROLE_KEY=...   # server-side only, never commit
+   ANTHROPIC_API_KEY=...           # M1 — dossier generation (Claude Sonnet 5)
+   TAVILY_API_KEY=...              # M1 — web research (search + extract)
    ```
 
    `.env.local` is gitignored. Never commit secrets (Engineering Rule #5).
@@ -75,9 +81,14 @@ Next.js automatically.
 app/
   page.tsx              Landing page
   login/                Email-OTP sign-in
-  dashboard/            Protected home (reads the user's profile)
+  dashboard/            Protected home — lists guests + dossiers
+  dossier/new/          Add-guest form
+  dossier/[id]/         Dossier view (summary + cited angles + sources)
+  api/dossier/          POST (research pipeline) · GET :id (owner-only read)
 components/ui/          shadcn/ui primitives
 lib/supabase/           client (browser) · server · middleware · admin (service role)
+lib/research/           Tavily provider (search + extract)
+lib/ai/                 Anthropic client · model routing · dossier generation
 middleware.ts           Session refresh + route guard
 supabase/migrations/    SQL migrations (RLS ships with each table)
 types/                  Shared DB row + API types
