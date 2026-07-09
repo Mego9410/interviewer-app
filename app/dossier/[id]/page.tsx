@@ -117,7 +117,7 @@ export default function DossierPage({
         <>
           <header className="mb-8 flex items-start justify-between gap-4">
             <div>
-              <h1 className="font-display text-3xl font-semibold tracking-tight">
+              <h1 className="font-serif text-4xl italic tracking-tight">
                 {detail.guest.name}
               </h1>
               {detail.dossier.status === "pending" && (
@@ -183,7 +183,7 @@ export default function DossierPage({
                     <li key={angle.id}>
                       <Card>
                         <CardContent className="space-y-2 py-4">
-                          <p className="font-display font-semibold leading-snug">{angle.question}</p>
+                          <p className="font-serif text-lg italic leading-snug">{angle.question}</p>
                           {angle.rationale && (
                             <p className="text-sm text-muted-foreground">
                               {angle.rationale}

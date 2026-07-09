@@ -74,7 +74,7 @@ export default async function SessionPage({
         <p className="eyebrow mb-2">
           {ended ? "Session recap" : "Live session"}
         </p>
-        <h1 className="font-display text-3xl font-semibold tracking-tight">
+        <h1 className="font-serif text-4xl italic tracking-tight">
           {guest?.name ?? "Guest"}
         </h1>
       </header>

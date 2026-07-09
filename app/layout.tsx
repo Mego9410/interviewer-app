@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource-variable/instrument-sans";
 import "@fontsource-variable/spline-sans-mono";
+import "@fontsource/instrument-serif";
+import "@fontsource/instrument-serif/400-italic.css";
 import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";

@@ -179,9 +179,7 @@ export default async function DashboardPage() {
               const inner = (
                 <Card className="transition-colors hover:border-signal/40">
                   <CardContent className="flex items-center justify-between py-4">
-                    <span className="font-display font-semibold">
-                      {guest.name}
-                    </span>
+                    <span className="font-serif text-lg italic">{guest.name}</span>
                     <StatusPill status={dossier?.status ?? null} />
                   </CardContent>
                 </Card>

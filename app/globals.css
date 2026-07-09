@@ -77,6 +77,81 @@
   }
 }
 
+/* Fixed grounds for the landing page — deliberate art direction, immune to
+   the theme toggle. .studio = the night studio; .paper = daylight editorial. */
+.studio {
+  --background: 20 16% 7%;
+  --foreground: 34 30% 91%;
+  --card: 24 19% 11%;
+  --card-foreground: 34 30% 91%;
+  --primary: 34 30% 91%;
+  --primary-foreground: 24 19% 10%;
+  --secondary: 27 18% 15%;
+  --secondary-foreground: 34 30% 91%;
+  --muted: 27 18% 14%;
+  --muted-foreground: 32 14% 62%;
+  --border: 28 19% 18%;
+  --signal: 35 80% 57%;
+  --signal-soft: 33 40% 14%;
+  --live: 4 72% 63%;
+  --ok: 150 36% 54%;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.paper {
+  --background: 40 38% 97%;
+  --foreground: 30 24% 10%;
+  --card: 36 40% 99%;
+  --card-foreground: 30 24% 10%;
+  --primary: 30 24% 12%;
+  --primary-foreground: 40 38% 97%;
+  --secondary: 37 30% 92%;
+  --secondary-foreground: 30 24% 14%;
+  --muted: 37 30% 92%;
+  --muted-foreground: 30 10% 38%;
+  --border: 37 26% 84%;
+  --signal: 33 72% 39%;
+  --signal-soft: 36 55% 93%;
+  --live: 4 59% 47%;
+  --ok: 150 44% 33%;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Film grain on the studio sections */
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Broadcast ticker */
+.marquee {
+  overflow: hidden;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
 @layer utilities {
   /* Mono eyebrow labels — the "tape log" register */
   .eyebrow {

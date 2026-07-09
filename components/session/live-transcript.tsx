@@ -433,7 +433,7 @@ export function LiveTranscript({ sessionId }: { sessionId: string }) {
                     s.status === "asked" && "opacity-60"
                   )}
                 >
-                  <p className="font-display font-semibold leading-snug">
+                  <p className="font-serif text-[17px] italic leading-snug">
                     {s.question}
                   </p>
                   {s.rationale && (

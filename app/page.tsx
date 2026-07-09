@@ -1,101 +1,57 @@
 import Link from "next/link";
-import { Check, ExternalLink, X } from "lucide-react";
+import { ArrowRight, Check, ExternalLink, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { WaveMark, Wordmark } from "@/components/wordmark";
+import { Wordmark } from "@/components/wordmark";
+import { WaveformStrip } from "@/components/waveform-strip";
 import { createClient } from "@/lib/supabase/server";
 import { FREE_INTERVIEW_LIMIT, PRO_PRICE_LABEL } from "@/lib/plan";
 
-const STEPS = [
+const TICKER = [
+  "No fact, no claim",
+  "Every suggestion cited",
+  "Your screen only",
+  "Audio never touches our servers",
+  "Transcripts auto-expire",
+];
+
+const TRACKS = [
   {
     n: "01",
     title: "Prep",
-    body: "Add a guest — a name and a few links. We research public sources into a grounded dossier with ten rarely-asked angles, each one cited.",
+    meta: "BEFORE THE CALL",
+    body: "Add a guest — a name and a few links. We research public sources into a grounded dossier: who they are, what they're known for, and ten rarely-asked angles. Each one cited.",
   },
   {
     n: "02",
     title: "Record",
-    body: "Start a session just before the call. The transcript runs live in your browser, and follow-ups appear the moment your guest says something worth chasing.",
+    meta: "DURING",
+    body: "Start a session just before you hit record. The transcript runs live in your browser, and the moment your guest says something worth chasing, the follow-up appears — with its source.",
   },
   {
     n: "03",
     title: "Publish",
-    body: "End the session and get a recap: the transcript, every question you asked, and a show-notes draft ready to edit.",
+    meta: "AFTER",
+    body: "End the session for the recap: full transcript, every question you asked, and a show-notes draft ready to edit.",
   },
 ] as const;
 
-const PRINCIPLES = [
-  {
-    title: "No fact, no claim",
-    body: "Every suggestion shows the source it came from — or says plainly that it's built on what your guest just said.",
-  },
-  {
-    title: "Your screen only",
-    body: "Suggestions never appear in the shared frame. Your guest sees a great interviewer, not a teleprompter.",
-  },
-  {
-    title: "Audio stays yours",
-    body: "Sound streams from your browser straight to transcription. It never passes through our servers.",
-  },
-] as const;
-
-function HeroDemo() {
+function Ticker() {
+  const items = TICKER.map((t, i) => (
+    <span
+      key={i}
+      className="flex items-center gap-12 pr-12 font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-signal"
+    >
+      {t}
+      <span aria-hidden="true" className="text-signal/40">
+        ●
+      </span>
+    </span>
+  ));
   return (
-    <div className="relative">
-      <div className="absolute -inset-8 signal-glow" aria-hidden="true" />
-      <div className="relative rounded-2xl border bg-card p-5 shadow-sm">
-        {/* Session chrome */}
-        <div className="flex items-center justify-between border-b pb-3">
-          <span className="inline-flex items-center gap-2">
-            <span className="size-2 animate-pulse rounded-full bg-live" />
-            <span className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-live">
-              Live
-            </span>
-          </span>
-          <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
-            REC 00:14:32
-          </span>
-        </div>
-
-        {/* Transcript */}
-        <div className="space-y-3 py-4 font-mono text-[12.5px] leading-relaxed">
-          <p>
-            <span className="mr-2 text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground">
-              host
-            </span>
-            <span className="text-muted-foreground">
-              So you scaled the company to two hundred people in three years.
-            </span>
-          </p>
-          <p>
-            <span className="mr-2 text-[10px] font-medium uppercase tracking-[0.15em] text-signal">
-              guest
-            </span>
-            Honestly, the second year nearly broke us — we hired too fast and
-            the process just didn&apos;t exist yet.
-          </p>
-        </div>
-
-        {/* The second question arrives */}
-        <div className="rounded-xl border border-signal/30 bg-signal-soft p-4">
-          <p className="eyebrow mb-2 !text-signal">Suggested follow-up</p>
-          <p className="font-display text-[15px] font-semibold leading-snug">
-            Your essay said remote-first breaks past fifty people — is that the
-            line where hiring outran process?
-          </p>
-          <p className="mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] text-signal">
-            <ExternalLink className="size-3" />
-            Personal blog — &ldquo;Remote past fifty&rdquo;
-          </p>
-          <div className="mt-3 flex gap-2" aria-hidden="true">
-            <span className="inline-flex items-center gap-1 rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
-              <Check className="size-3" /> Asked
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted-foreground">
-              <X className="size-3" /> Dismiss
-            </span>
-          </div>
-        </div>
+    <div className="marquee border-y border-signal/20 py-3" aria-hidden="true">
+      <div className="marquee-track">
+        <div className="flex">{items}</div>
+        <div className="flex">{items}</div>
       </div>
     </div>
   );
@@ -109,126 +65,234 @@ export default async function Home() {
 
   const cta = user
     ? { href: "/dashboard", label: "Open your dashboard" }
-    : { href: "/login", label: "Build your first dossier" };
+    : { href: "/login", label: "Start free" };
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Nav */}
-      <header>
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Wordmark />
-          <div className="flex items-center gap-2">
-            {!user && (
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/login">Sign in</Link>
-              </Button>
-            )}
-            <Button asChild size="sm">
-              <Link href={cta.href}>{cta.label}</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1">
-        {/* Hero */}
-        <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pt-24">
-          <div>
-            <p className="eyebrow mb-5 flex items-center gap-3">
-              <WaveMark animated className="h-3.5" />
-              Live interview copilot
-            </p>
-            <h1 className="font-display text-[2.6rem] font-bold leading-[1.04] tracking-tight sm:text-6xl">
-              Everyone asks the first question.
-              <span className="mt-2 block text-signal">
-                You&apos;ll ask the second.
+      {/* ======================= SIDE A — the studio ======================= */}
+      <div className="studio grain relative">
+        {/* Nav */}
+        <header className="relative z-10">
+          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+            <Wordmark />
+            <div className="flex items-center gap-5">
+              <span className="hidden font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground sm:block">
+                Side A · 33:05
               </span>
-            </h1>
-            <p className="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground">
+              {!user && (
+                <Link
+                  href="/login"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Sign in
+                </Link>
+              )}
+              <Link
+                href={cta.href}
+                className="inline-flex h-9 items-center gap-2 rounded-full bg-signal px-4 text-sm font-semibold text-background transition-transform hover:-translate-y-0.5"
+              >
+                {cta.label}
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        {/* Hero — the two voices */}
+        <section className="relative z-10 mx-auto max-w-6xl px-6 pt-16 sm:pt-24">
+          <p className="mb-8 flex items-center gap-3 font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-signal">
+            <span className="size-2 animate-pulse rounded-full bg-live" />
+            Live interview copilot
+          </p>
+
+          <h1 className="max-w-5xl">
+            <span className="block font-display text-[clamp(3rem,9vw,7.5rem)] font-bold leading-[0.95] tracking-[-0.03em]">
+              Everyone asks the first&nbsp;question.
+            </span>
+            <span className="mt-3 block font-serif text-[clamp(3.2rem,9.5vw,8rem)] italic leading-[0.95] tracking-[-0.01em] text-signal">
+              You&rsquo;ll ask the second.
+            </span>
+          </h1>
+
+          <div className="mt-12 flex max-w-xl flex-col gap-6 sm:mt-16">
+            <p className="text-lg leading-relaxed text-muted-foreground">
               The Second Question researches your guest before the call, then
               listens live and hands you the follow-up only you could ask —
               every suggestion tied to a cited source.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Button asChild size="lg" className="h-11 px-6 text-[15px]">
-                <Link href={cta.href}>{cta.label}</Link>
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                Free for {FREE_INTERVIEW_LIMIT} interviews a month
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              Free for {FREE_INTERVIEW_LIMIT} interviews a month · No card
+              required
+            </p>
+          </div>
+        </section>
+
+        {/* The moment — oversized transcript + the arriving question */}
+        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-8 pt-20 sm:pt-28">
+          <div className="grid items-start gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+            <figure className="relative">
+              <span
+                aria-hidden="true"
+                className="absolute -left-4 -top-14 select-none font-serif text-[10rem] italic leading-none text-signal/25 sm:-left-10"
+              >
+                &ldquo;
               </span>
-            </div>
-          </div>
-          <HeroDemo />
-        </section>
+              <blockquote className="relative font-serif text-[clamp(1.7rem,3.4vw,2.6rem)] italic leading-[1.2]">
+                Honestly, the second year nearly broke us — we hired too fast
+                and the process just didn&rsquo;t exist yet.
+              </blockquote>
+              <figcaption className="mt-5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <span className="text-signal">Guest</span> · 00:14:27 ·
+                transcribed live
+              </figcaption>
+            </figure>
 
-        {/* How it works */}
-        <section className="border-t bg-card/50">
-          <div className="mx-auto max-w-6xl px-6 py-16">
-            <p className="eyebrow mb-8">How a session runs</p>
-            <div className="grid gap-10 sm:grid-cols-3">
-              {STEPS.map((s) => (
-                <div key={s.n}>
-                  <p className="font-mono text-sm text-signal">{s.n}</p>
-                  <h3 className="mt-2 font-display text-xl font-semibold tracking-tight">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-                    {s.body}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Principles */}
-        <section className="border-t">
-          <div className="mx-auto max-w-6xl px-6 py-16">
-            <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
-              Built to be trusted mid-sentence.
-            </h2>
-            <div className="mt-8 grid gap-8 sm:grid-cols-3">
-              {PRINCIPLES.map((p) => (
-                <div key={p.title} className="rounded-xl border bg-card p-5">
-                  <h3 className="font-display text-base font-semibold">
-                    {p.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {p.body}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing line */}
-        <section className="border-t">
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-6 py-16 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="font-display text-2xl font-semibold tracking-tight">
-                Start free. Upgrade when it earns its keep.
-              </h2>
-              <p className="mt-2 text-muted-foreground">
-                {FREE_INTERVIEW_LIMIT} interviews a month on the free plan —
-                then {PRO_PRICE_LABEL} for unlimited.
+            {/* The suggestion card — a physical object dropped on the desk */}
+            <aside
+              className="relative -rotate-1 rounded-2xl border border-signal/40 bg-card p-6 shadow-[8px_8px_0_hsl(var(--signal)/0.25)]"
+              aria-label="Example suggested follow-up"
+            >
+              <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-signal">
+                Suggested follow-up · 0.8s later
               </p>
-            </div>
-            <Button asChild size="lg" className="h-11 px-6">
-              <Link href={cta.href}>{cta.label}</Link>
-            </Button>
+              <p className="font-serif text-2xl italic leading-snug">
+                Your essay said remote-first breaks past fifty people — is that
+                the line where hiring outran process?
+              </p>
+              <p className="mt-4 inline-flex items-center gap-1.5 font-mono text-[11px] text-signal">
+                <ExternalLink className="size-3" />
+                Personal blog — &ldquo;Remote past fifty&rdquo;
+              </p>
+              <div className="mt-5 flex gap-2" aria-hidden="true">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground">
+                  <Check className="size-3" /> Asked
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
+                  <X className="size-3" /> Dismiss
+                </span>
+              </div>
+            </aside>
           </div>
         </section>
-      </main>
 
-      <footer className="border-t">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-8">
-          <Wordmark className="opacity-70" />
-          <p className="font-mono text-[11px] text-muted-foreground">
-            Ask better second questions.
+        {/* Waveform floor */}
+        <WaveformStrip className="relative z-10 mt-10 w-full px-2" bars={140} />
+      </div>
+
+      {/* Ticker */}
+      <div className="studio">
+        <Ticker />
+      </div>
+
+      {/* ======================= SIDE B — paper ======================= */}
+      <div className="paper">
+        {/* Tracklist */}
+        <section className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
+          <div className="mb-4 flex items-baseline justify-between">
+            <h2 className="font-display text-[clamp(1.8rem,3.5vw,2.75rem)] font-bold tracking-[-0.02em]">
+              How a session runs
+            </h2>
+            <span className="hidden font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground sm:block">
+              Tracklist
+            </span>
+          </div>
+
+          <ol>
+            {TRACKS.map((t) => (
+              <li
+                key={t.n}
+                className="group grid gap-4 border-t py-10 sm:grid-cols-[7rem_1fr_1.6fr] sm:gap-8"
+              >
+                <span className="font-display text-5xl font-bold leading-none text-signal/90 transition-transform group-hover:translate-x-1 sm:text-6xl">
+                  {t.n}
+                </span>
+                <div>
+                  <h3 className="font-serif text-3xl italic leading-none">
+                    {t.title}
+                  </h3>
+                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    {t.meta}
+                  </p>
+                </div>
+                <p className="max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+                  {t.body}
+                </p>
+              </li>
+            ))}
+          </ol>
+          <div className="border-t" />
+        </section>
+
+        {/* Trust — typographic, no cards */}
+        <section className="mx-auto max-w-6xl px-6 pb-24">
+          <h2 className="max-w-3xl font-display text-[clamp(2rem,4.5vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.02em]">
+            Built to be trusted{" "}
+            <em className="font-serif font-normal italic text-signal">
+              mid&#8209;sentence.
+            </em>
+          </h2>
+          <div className="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-3">
+            {[
+              {
+                label: "Grounded",
+                body: "Every suggestion shows the source it came from — or says plainly that it's built on what your guest just said. No fact, no claim.",
+              },
+              {
+                label: "Discreet",
+                body: "Suggestions never appear in the shared frame. Your guest sees a great interviewer, not a teleprompter.",
+              },
+              {
+                label: "Private",
+                body: "Audio streams from your browser straight to transcription — it never passes through our servers — and transcripts auto-expire.",
+              },
+            ].map((p) => (
+              <div key={p.label} className="border-t pt-5">
+                <h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-signal">
+                  {p.label}
+                </h3>
+                <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+                  {p.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* ======================= OUTRO — back to the studio ======================= */}
+      <div className="studio grain relative">
+        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-10 pt-24 text-center sm:pt-32">
+          <p className="font-serif text-[clamp(2.4rem,6vw,5rem)] italic leading-[1.05]">
+            Ready to ask{" "}
+            <span className="text-signal">better questions?</span>
           </p>
-        </div>
-      </footer>
+          <p className="mx-auto mt-6 max-w-md text-muted-foreground">
+            {FREE_INTERVIEW_LIMIT} interviews a month free — then{" "}
+            {PRO_PRICE_LABEL} for unlimited.
+          </p>
+          <div className="mt-10 flex justify-center">
+            <Link
+              href={cta.href}
+              className="inline-flex h-12 items-center gap-2 rounded-full bg-signal px-7 text-[15px] font-semibold text-background transition-transform hover:-translate-y-0.5"
+            >
+              {cta.label}
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        </section>
+
+        <WaveformStrip className="relative z-10 mt-16 w-full px-2" bars={140} />
+
+        <footer className="relative z-10 border-t border-border/60">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8">
+            <Wordmark className="opacity-80" />
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              REC <span className="text-live">●</span> Ask better second
+              questions
+            </p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }

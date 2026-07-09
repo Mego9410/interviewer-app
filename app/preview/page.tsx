@@ -73,9 +73,7 @@ export default function PreviewPage() {
           <SampleBadge />
           <h2 className="eyebrow mb-4">1 · Dossier</h2>
           <div className="flex items-start justify-between gap-4">
-            <h3 className="font-display text-3xl font-semibold tracking-tight">
-              Jane Doe
-            </h3>
+            <h3 className="font-serif text-4xl italic tracking-tight">Jane Doe</h3>
             <Button>
               <Radio />
               Start live session
@@ -101,9 +99,7 @@ export default function PreviewPage() {
               <li key={i}>
                 <Card>
                   <CardContent className="space-y-2 py-4">
-                    <p className="font-display font-semibold leading-snug">
-                      {a.q}
-                    </p>
+                    <p className="font-serif text-lg italic leading-snug">{a.q}</p>
                     <p className="text-sm text-muted-foreground">{a.r}</p>
                     {a.source ? (
                       <span className="inline-flex items-center gap-1 font-mono text-[11px] text-signal">
@@ -162,7 +158,7 @@ export default function PreviewPage() {
               <h4 className="eyebrow">Follow-ups</h4>
               <ul className="space-y-2">
                 <li className="rounded-xl border border-signal/30 bg-signal-soft p-3.5 text-sm">
-                  <p className="font-display font-semibold leading-snug">
+                  <p className="font-serif text-[17px] italic leading-snug">
                     When you say it &quot;nearly broke&quot; you — what
                     actually started failing first?
                   </p>
@@ -184,7 +180,7 @@ export default function PreviewPage() {
                   </div>
                 </li>
                 <li className="rounded-xl border border-signal/30 bg-signal-soft p-3.5 text-sm">
-                  <p className="font-display font-semibold leading-snug">
+                  <p className="font-serif text-[17px] italic leading-snug">
                     Your blog said remote-first breaks past 50 — is that the
                     line where hiring outran process here?
                   </p>

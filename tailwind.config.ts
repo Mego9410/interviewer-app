@@ -17,6 +17,7 @@ const config: Config = {
       fontFamily: {
         sans: ['"Instrument Sans Variable"', "system-ui", "sans-serif"],
         display: ['"Bricolage Grotesque Variable"', "system-ui", "sans-serif"],
+        serif: ['"Instrument Serif"', "Georgia", "serif"],
         mono: ['"Spline Sans Mono Variable"', "ui-monospace", "monospace"],
       },
       colors: {
