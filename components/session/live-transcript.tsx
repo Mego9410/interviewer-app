@@ -1,10 +1,12 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { DeepgramClient } from "@deepgram/sdk";
 import {
   Check,
   ExternalLink,
+  FileText,
   Loader2,
   Mic,
   MonitorSpeaker,
@@ -64,7 +66,9 @@ function dominantSpeaker(words: { speaker?: number }[]): number | null {
 }
 
 export function LiveTranscript({ sessionId }: { sessionId: string }) {
+  const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
+  const [ending, setEnding] = useState(false);
   const [source, setSource] = useState<CaptureSource>("tab");
   const [lines, setLines] = useState<Line[]>([]);
   const [interim, setInterim] = useState("");
@@ -277,6 +281,20 @@ export function LiveTranscript({ sessionId }: { sessionId: string }) {
     setStatus("ended");
   }
 
+  async function endAndRecap() {
+    setEnding(true);
+    cleanup();
+    setInterim("");
+    setStatus("ended");
+    try {
+      await fetch(`/api/session/${sessionId}/end`, { method: "POST" });
+    } catch {
+      toast.error("Could not draft the recap — the session was still ended.");
+    }
+    // Server re-renders the page as the ended recap view.
+    router.refresh();
+  }
+
   const isLive = status === "live";
   const isConnecting = status === "connecting";
 
@@ -331,11 +349,25 @@ export function LiveTranscript({ sessionId }: { sessionId: string }) {
               <Square className="size-4" />
               Stop
             </Button>
+            <Button onClick={endAndRecap} disabled={isConnecting || ending}>
+              {ending ? <Loader2 className="animate-spin" /> : <FileText />}
+              End &amp; recap
+            </Button>
           </>
         )}
 
         {status === "ended" && (
-          <span className="text-sm text-muted-foreground">Session stopped.</span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">
+              {ending ? "Drafting recap…" : "Session stopped."}
+            </span>
+            {!ending && (
+              <Button onClick={endAndRecap}>
+                <FileText />
+                End &amp; recap
+              </Button>
+            )}
+          </div>
         )}
       </div>
 

@@ -31,7 +31,11 @@ one milestone at a time; a milestone's acceptance criteria gate the next one.**
       /api/suggestion/:id`. Calm host-only side panel shows question + rationale
       + source with Asked / Dismiss; throttled so it fires on substantial guest
       moments.
-- [ ] M4 — Recap
+- [x] **M4 — Recap.** `POST /api/session/:id/end` stamps `ended_at` and drafts
+      show notes (Sonnet 5, from the transcript + asked follow-ups);
+      `PATCH /api/session/:id` saves host edits. Session page flips to a recap
+      view — editable show-notes, the asked/dismissed suggestion log, and the
+      full transcript; dashboard lists recent sessions.
 - [ ] M5 — Billing + funnel
 
 ## Stack
@@ -97,7 +101,8 @@ app/
   dossier/[id]/         Dossier view (summary + cited angles + sources)
   session/[id]/         Live session — capture + transcript
   api/dossier/          POST (research pipeline) · GET :id (owner-only read)
-  api/session/          POST (create) · [id]/segment POST (persist transcript)
+  api/session/          POST (create) · [id] PATCH (show notes) ·
+                        [id]/segment POST · [id]/end POST (draft show notes)
   api/transcription-token/  POST — mint a short-lived Deepgram token
   api/suggest/          POST — triage → grounded follow-up generation
   api/suggestion/[id]/  PATCH — mark asked / dismissed

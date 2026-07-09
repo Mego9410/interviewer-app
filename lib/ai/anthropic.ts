@@ -43,6 +43,29 @@ function extractJson(raw: string): string {
 }
 
 /**
+ * Ask a model for plain prose (e.g. show notes). Strips any stray code fences.
+ * Throws on transport failure; callers degrade gracefully.
+ */
+export async function generateText(opts: {
+  model: string;
+  system: string;
+  user: string;
+  maxTokens?: number;
+}): Promise<string> {
+  const anthropic = getAnthropic();
+  const message = await anthropic.messages.create({
+    model: opts.model,
+    max_tokens: opts.maxTokens ?? 2048,
+    system: opts.system,
+    messages: [{ role: "user", content: opts.user }],
+  });
+  return textOf(message)
+    .replace(/^```(?:markdown|md)?\s*/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+}
+
+/**
  * Ask a model for strict JSON and parse it defensively (Engineering Rule #8):
  * JSON-only prompt, strip fences, parse, retry once on failure. Throws if both
  * attempts fail — callers degrade gracefully rather than crash.
