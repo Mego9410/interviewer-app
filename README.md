@@ -25,7 +25,12 @@ one milestone at a time; a milestone's acceptance criteria gate the next one.**
       through our server); browser captures meeting-tab (or mic) audio, streams
       to Deepgram (`nova-3`, diarized), renders live host/guest segments and
       persists finalized ones.
-- [ ] M3 — Follow-up engine
+- [x] **M3 — Follow-up engine.** `suggestions` table + RLS; `POST /api/suggest`
+      (Haiku triage → if worthy, Sonnet 5 generation, grounded in the dossier +
+      what the guest just said, each returning its `sourceId`); `PATCH
+      /api/suggestion/:id`. Calm host-only side panel shows question + rationale
+      + source with Asked / Dismiss; throttled so it fires on substantial guest
+      moments.
 - [ ] M4 — Recap
 - [ ] M5 — Billing + funnel
 
@@ -94,11 +99,13 @@ app/
   api/dossier/          POST (research pipeline) · GET :id (owner-only read)
   api/session/          POST (create) · [id]/segment POST (persist transcript)
   api/transcription-token/  POST — mint a short-lived Deepgram token
+  api/suggest/          POST — triage → grounded follow-up generation
+  api/suggestion/[id]/  PATCH — mark asked / dismissed
 components/ui/          shadcn/ui primitives
-components/session/     Live capture + transcript (client)
+components/session/     Live capture + transcript + follow-up panel (client)
 lib/supabase/           client (browser) · server · middleware · admin (service role)
 lib/research/           Tavily provider (search + extract)
-lib/ai/                 Anthropic client · model routing · dossier generation
+lib/ai/                 Anthropic client · model routing · dossier · triage · follow-ups
 lib/deepgram.ts         Server-side transcription-token grant
 middleware.ts           Session refresh + route guard
 supabase/migrations/    SQL migrations (RLS ships with each table)

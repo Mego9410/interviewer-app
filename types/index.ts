@@ -118,6 +118,42 @@ export interface CreateSegmentRequest {
   tsEnd: number | null;
 }
 
+export interface Suggestion {
+  id: string;
+  user_id: string;
+  session_id: string;
+  segment_id: string | null;
+  source_id: string | null;
+  question: string;
+  rationale: string | null;
+  status: SuggestionStatus;
+  created_at: string;
+}
+
+/** One recent transcript line sent to the follow-up engine as context. */
+export interface RecentSegment {
+  speaker: Speaker | null;
+  text: string;
+}
+
+export interface SuggestRequest {
+  sessionId: string;
+  recentSegments: RecentSegment[];
+}
+
+/** A suggestion plus the source it cites (if any), for rendering. */
+export interface SuggestionWithSource extends Suggestion {
+  source: Pick<Source, "id" | "url" | "title"> | null;
+}
+
+export interface SuggestResponse {
+  suggestions: SuggestionWithSource[];
+}
+
+export interface UpdateSuggestionRequest {
+  status: Extract<SuggestionStatus, "asked" | "dismissed">;
+}
+
 // --- API envelopes ---
 export interface ApiError {
   error: string;
