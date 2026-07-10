@@ -8,9 +8,10 @@ import { createClient } from "@/lib/supabase/client";
 
 export function SignOutButton() {
   const router = useRouter();
-  const supabase = createClient();
 
   async function signOut() {
+    // Browser-only: constructed on click, never during prerender.
+    const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
     router.refresh();

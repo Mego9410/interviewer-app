@@ -24,7 +24,6 @@ type Step = "email" | "code";
 
 export default function LoginPage() {
   const router = useRouter();
-  const supabase = createClient();
 
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
@@ -34,6 +33,9 @@ export default function LoginPage() {
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    // Created here (browser-only) so the client is never constructed during
+    // the build-time prerender, where env vars may be absent.
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { shouldCreateUser: true },
@@ -51,6 +53,7 @@ export default function LoginPage() {
   async function verifyCode(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    const supabase = createClient();
     const { error } = await supabase.auth.verifyOtp({
       email,
       token: code.trim(),
