@@ -137,6 +137,20 @@ export default function LoginPage() {
               </Button>
             </form>
           )}
+
+          {process.env.NEXT_PUBLIC_ALLOW_DEV_LOGIN === "true" && (
+            <div className="mt-5 border-t border-dashed pt-4">
+              <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-signal">
+                Dev only
+              </p>
+              <Button asChild variant="outline" className="w-full">
+                <a href="/api/dev-login">Skip auth · sign in as test user</a>
+              </Button>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Signs into a seeded Pro test account. Backend still required.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </main>

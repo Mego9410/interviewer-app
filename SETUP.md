@@ -67,6 +67,27 @@ Stripe redirects resolve.
 
 ---
 
+## Dev sign-in (skip the login email while testing)
+
+To exercise the app without waiting on an OTP email, enable the dev sign-in.
+It logs you into a **real, seeded test user** (granted Pro), so RLS still
+applies — it only skips the email step, not the backend. It requires the
+Supabase env above.
+
+Set these (locally in `.env.local`, or in Vercel), then redeploy:
+
+```
+ALLOW_DEV_LOGIN=true              # server gate — the route 404s without it
+NEXT_PUBLIC_ALLOW_DEV_LOGIN=true  # shows the button on /login
+# DEV_LOGIN_EMAIL / DEV_LOGIN_PASSWORD — optional; sensible defaults otherwise
+```
+
+A "Skip auth · sign in as test user" button then appears on `/login`. First
+click provisions the test user (and its `profiles` row via the signup trigger).
+
+> ⚠️ **Never enable these on a deployment with real users** — it's an
+> auth bypass. Leave both unset in real production.
+
 ## 6. Acceptance checks (the PRD's gates)
 
 - **M0** — sign up, confirm a `profiles` row exists. Cross-user isolation:
