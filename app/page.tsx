@@ -51,10 +51,16 @@ function SectionLabel({ n, children }: { n: string; children: React.ReactNode })
 }
 
 export default async function Home() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Resilient to a not-yet-configured backend: render the logged-out landing
+  // rather than 500 if Supabase env vars are missing.
+  let user = null;
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // env not set — treat as logged out
+  }
 
   const cta = user
     ? { href: "/dashboard", label: "Open your dashboard" }
