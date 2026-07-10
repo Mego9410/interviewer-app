@@ -45,9 +45,12 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isAuthRoute = pathname.startsWith("/login");
-  // /preview is the backend-free design preview (sample data only).
+  // /preview and /demo are backend-free (sample data only), no auth needed.
   const isPublicRoute =
-    pathname === "/" || isAuthRoute || pathname.startsWith("/preview");
+    pathname === "/" ||
+    isAuthRoute ||
+    pathname.startsWith("/preview") ||
+    pathname.startsWith("/demo");
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();

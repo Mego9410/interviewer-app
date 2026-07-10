@@ -153,6 +153,13 @@ export default function LoginPage() {
           )}
         </CardContent>
       </Card>
+
+      <Link
+        href="/demo"
+        className="mt-6 self-center font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground hover:text-signal"
+      >
+        Or explore a non-functional demo →
+      </Link>
     </main>
   );
 }
